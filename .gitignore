@@ -1,0 +1,12 @@
+# Dependencies
+/node_modules
+package-lock.json
+
+# Output directories
+/build
+/dist
+/.cache
+
+# Miscellaneous
+.DS_Store
+Thumbs.db
