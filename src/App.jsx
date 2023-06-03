@@ -5,10 +5,8 @@ import Card from './components/Card';
 function App() {
   const [forcast, setForcast] = useState([]);
   const [days, setDays] = useState(15);
-  useEffect(() => {
-    predictWeather(days);
-  }, []);
-  function predictWeather(days) {
+
+  function predictWeather(timeUnits) {
     // Define the states
     const states = ['Cloudy', 'Sunny', 'Rain', 'Snow'];
 
@@ -23,19 +21,32 @@ function App() {
     // Start from a random state
     let currentState = states[Math.floor(Math.random() * states.length)];
 
-    // Predict the weather for the next 10 days
+    // Predict the weather for the given time units
+    let day = 1;
+    let time = 0;
     let forecast = [];
-    for (let i = 0; i < days; i++) {
-      currentState = predictNextState(currentState, transitionMatrix);
-      forecast.push(currentState);
+    while (day <= timeUnits) {
+      let timeInCurrentState = -Math.log(Math.random()); // Exponential random variable
+      time += timeInCurrentState;
+
+      while (time >= day) {
+        currentState = predictNextState(currentState, transitionMatrix);
+        forecast.push({
+          day: day,
+          state: currentState,
+        });
+        day++;
+        if (day > timeUnits) {
+          break;
+        }
+      }
+
+      if (day > timeUnits) {
+        break;
+      }
     }
 
-    // Log the result
-    console.log(forcast);
     setForcast(forecast);
-    console.log(
-      `The predicted weather for the next 10 days is: ${forecast.join(', ')}.`
-    );
   }
 
   function predictNextState(currentState, transitionMatrix) {
@@ -96,7 +107,7 @@ function App() {
         <div className="card-container">
           {forcast.length > 0 &&
             forcast.map((d, index) => {
-              return <Card name={d} day={index + 1} />;
+              return <Card key={index} name={d.state} day={d.day} />;
             })}
         </div>
       </div>
